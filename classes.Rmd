@@ -5,6 +5,10 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(readxl)
+library(tidyverse)
+library(dplyr)
+library(janitor)
 ```
 
 ## R Markdown
@@ -20,5 +24,21 @@ download.file(url = url_current,
 
 download.file(url = url_old,
               destfile = "old.xlsx")
+
+current <- read_excel("current.xlsx", skip = 3) %>% 
+  clean_names() %>% 
+  filter(!is.na(course_name))
+
+old <- read_excel("old.xlsx", skip = 3) %>% 
+  clean_names() %>% 
+  filter(!is.na(course_name))
+
+# Bring data together to select for courses that are new this year
+
+new <- current %>% 
+  anti_join(old, by = "course_id") %>% 
+  arrange(desc(total)) %>% 
+  select(course_name, total) %>% 
+  slice(1:5)
 
 ```

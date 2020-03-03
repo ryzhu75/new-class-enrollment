@@ -377,7 +377,23 @@ download.file(url = url_current,
 
 
 download.file(url = url_old,
-              destfile = &quot;old.xlsx&quot;)</code></pre>
+              destfile = &quot;old.xlsx&quot;)
+
+current &lt;- read_excel(&quot;current.xlsx&quot;, skip = 3) %&gt;% 
+  clean_names() %&gt;% 
+  filter(!is.na(course_name))
+
+old &lt;- read_excel(&quot;old.xlsx&quot;, skip = 3) %&gt;% 
+  clean_names() %&gt;% 
+  filter(!is.na(course_name))
+
+# Bring data together to select for courses that are new this year
+
+new &lt;- current %&gt;% 
+  anti_join(old, by = &quot;course_id&quot;) %&gt;% 
+  arrange(desc(total)) %&gt;% 
+  select(course_name, total) %&gt;% 
+  slice(1:5)</code></pre>
 </div>
 
 
